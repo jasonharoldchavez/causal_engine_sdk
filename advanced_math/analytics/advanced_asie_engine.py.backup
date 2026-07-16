@@ -1,0 +1,81 @@
+import numpy as np
+import scipy.linalg as la
+
+class AdvancedASIEEngine:
+    """
+    Advanced Adaptive Structural Inference Engine.
+    Extends ASIE with weighted causal filtering and confidence scoring.
+    """
+
+    def __init__(self, num_signals, max_lags=3, threshold=0.01):
+        self.num_signals = num_signals
+        self.max_lags = max_lags
+        self.threshold = threshold
+
+    def analyze(self, history):
+        Y, X = self._build_matrix(history)
+
+        ridge = 1e-3
+        B = la.inv(X.T @ X + np.eye(X.shape[1]) * ridge) @ X.T @ Y
+
+        causal = self._discover_structure(X, Y, B)
+
+        filtered_B = B.copy()
+
+        for source in range(self.num_signals):
+            for target in range(self.num_signals):
+                if source != target and causal[source, target] == 0:
+                    for lag in range(self.max_lags):
+                        filtered_B[lag * self.num_signals + source, target] = 0
+
+        current = []
+        for lag in range(1, self.max_lags + 1):
+            current.extend(history[-lag])
+
+        prediction = np.array(current).reshape(1, -1) @ filtered_B
+
+        return {
+            "prediction": prediction.flatten(),
+            "causal_matrix": causal,
+            "filtered_weights": filtered_B
+        }
+
+    def _build_matrix(self, data):
+        samples = len(data) - self.max_lags
+        features = self.num_signals * self.max_lags
+
+        X = np.zeros((samples, features))
+        Y = data[self.max_lags:]
+
+        for t in range(samples):
+            row = []
+            for lag in range(1, self.max_lags + 1):
+                row.extend(data[t + self.max_lags - lag])
+            X[t] = row
+
+        return Y, X
+
+    def _discover_structure(self, X, Y, B):
+        residual = Y - X @ B
+        base_error = np.mean(residual ** 2, axis=0)
+
+        matrix = np.zeros((self.num_signals, self.num_signals))
+
+        for source in range(self.num_signals):
+            for target in range(self.num_signals):
+                if source == target:
+                    continue
+
+                idx = [
+                    lag * self.num_signals + source
+                    for lag in range(self.max_lags)
+                ]
+
+                influence = np.sum(B[idx, target] ** 2)
+
+                score = influence / (base_error[target] + 1e-9)
+
+                if score > self.threshold:
+                    matrix[source, target] = score
+
+        return matrix
