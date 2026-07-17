@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="causal-engine-sdk",
-    version="0.2.0",
+    version="0.2.1",
     description="Lightweight causal modeling and adaptive structural inference SDK",
     author="Jason Chavez",
     packages=find_packages(),

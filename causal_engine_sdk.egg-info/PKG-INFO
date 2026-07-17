@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: causal-engine-sdk
+Version: 0.2.1
+Summary: Lightweight causal modeling and adaptive structural inference SDK
+Author: Jason Chavez
+Requires-Python: >=3.10
+License-File: LICENSE
+Requires-Dist: numpy>=2.0
+Dynamic: author
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
