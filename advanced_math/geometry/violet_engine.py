@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.linalg import svd
 
 
 class VioletEngine:
@@ -57,7 +56,7 @@ class VioletEngine:
 
     def analyze_structural_volume(self, trajectory_matrix):
 
-        _, singular_values, _ = svd(
+        _, singular_values, _ = np.linalg.svd(
             trajectory_matrix,
             full_matrices=False
         )

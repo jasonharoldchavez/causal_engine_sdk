@@ -1,6 +1,5 @@
 import numpy as np
 import networkx as nx
-from scipy.sparse import lil_matrix, csc_matrix
 
 
 class ASIEHodgeEngine:
@@ -37,7 +36,7 @@ class ASIEHodgeEngine:
 
     def compute_boundary_operators(self):
 
-        B1 = lil_matrix(
+        B1 = np.zeros(
             (len(self.nodes), len(self.edges)),
             dtype=np.float64
         )
@@ -47,7 +46,7 @@ class ASIEHodgeEngine:
             B1[self.node_to_idx[u], idx] = -1.0
             B1[self.node_to_idx[v], idx] = 1.0
 
-        B2 = lil_matrix(
+        B2 = np.zeros(
             (len(self.edges), len(self.triangles)),
             dtype=np.float64
         )
@@ -65,7 +64,7 @@ class ASIEHodgeEngine:
                 if edge in self.edge_to_idx:
                     B2[self.edge_to_idx[edge], t_idx] = sign
 
-        return csc_matrix(B1), csc_matrix(B2)
+        return np.array(B1), np.array(B2)
 
     def compute_hodge_laplacian_1(self):
 
@@ -79,7 +78,7 @@ class ASIEHodgeEngine:
 
         else:
 
-            L1_up = csc_matrix(
+            L1_up = np.array(
                 (
                     len(self.edges),
                     len(self.edges)

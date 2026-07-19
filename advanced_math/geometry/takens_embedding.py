@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.linalg import eigh
 
 
 class TopologicalStateEngine:
@@ -62,7 +61,7 @@ class TopologicalStateEngine:
 
     def extract_structural_invariants(self, L):
 
-        eigenvalues = eigh(
+        eigenvalues = np.linalg.eigh(
             L,
             eigvals_only=True
         )

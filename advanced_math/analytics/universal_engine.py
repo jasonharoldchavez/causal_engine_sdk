@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 
-from scipy.linalg import det, eigh
 from sklearn.preprocessing import StandardScaler
 
 
@@ -176,7 +175,7 @@ class RealUniversalEngine:
 
             try:
 
-                covariance_det = det(
+                covariance_det = np.linalg.det(
                     covariance
                 )
 
@@ -253,7 +252,7 @@ class RealUniversalEngine:
 
             try:
 
-                eigenvalues = eigh(
+                eigenvalues = np.linalg.eigh(
                     laplacian,
                     eigvals_only=True
                 )
