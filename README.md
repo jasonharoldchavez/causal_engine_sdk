@@ -156,17 +156,25 @@ Future development may include:
 
 ---
 
-## License
+License
 
-Released under the MIT License.
+Causal Engine SDK is available under a dual-license model.
 
-See:
+Open Source License
 
-```
-LICENSE
-```
+This project is licensed under the Apache License 2.0. See the "LICENSE" file for the complete license text.
 
----
+Commercial License
+
+Commercial licenses are available for organizations requiring enterprise support, custom development, proprietary integrations, or other commercial arrangements.
+
+See "LICENSE-COMMERCIAL.md" for details.
+
+For commercial licensing inquiries, contact:
+
+Jason Harold Chavez
+
+[Your contact email]
 
 ## Author
 
