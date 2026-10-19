@@ -51,7 +51,7 @@ class TestASIEEngine(unittest.TestCase):
         invalid_histories = [
             [1.0, 2.0, 3.0],
             np.ones((5, 3)),
-            np.ones((3, 2)),
+            np.ones((2, 2)),
             np.array([[1.0, np.nan], [2.0, 3.0], [4.0, 5.0], [6.0, 7.0]]),
             np.array([[1.0, np.inf], [2.0, 3.0], [4.0, 5.0], [6.0, 7.0]]),
             [["bad", "data"], ["bad", "data"], ["bad", "data"], ["bad", "data"]],
