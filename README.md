@@ -1,7 +1,7 @@
 # Causal Engine SDK
 
 ![Version](https://img.shields.io/github/v/release/jasonharoldchavez/causal_engine_sdk)
-![Python](https://img.shields.io/badge/python-3.9%2B-blue)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/github/license/jasonharoldchavez/causal_engine_sdk)
 ![Status](https://img.shields.io/badge/status-active-green)
 
@@ -11,9 +11,9 @@ A lightweight Python framework for causal modeling, adaptive inference, simulati
 
 ## Overview
 
-Causal Engine SDK is a modular framework for building and experimenting with causal models, adaptive inference systems, structural simulations, and validation pipelines.
+Causal Engine SDK is a modular framework for building and experimenting with predictive models, causal-modeling workflows, structural simulations, and validation pipelines.
 
-The project provides a lightweight NumPy-based foundation designed for research, experimentation, edge deployment, and resource-constrained environments.
+The project provides a lightweight NumPy-based foundation designed for research, experimentation, edge deployment, and resource-constrained environments. **A predictive relationship is not, by itself, evidence of a causal effect.** Causal claims require explicit assumptions, suitable identification methods, and validation.
 
 ---
 
@@ -21,11 +21,12 @@ The project provides a lightweight NumPy-based foundation designed for research,
 
 ### ASIE (Adaptive Structural Inference Engine)
 
-- Adaptive inference pipeline
+- Multivariate lagged ridge-regression predictor
 - Numerical pattern analysis
-- Lightweight prediction engine
-- Extensible architecture
-- NumPy-based implementation
+- Input validation for fitted histories
+- Extensible NumPy-based implementation
+
+ASIE's lagged regression coefficients describe predictive associations. They do not, by themselves, identify causal effects or discover a validated causal graph.
 
 ### Causal Modeling
 
@@ -50,20 +51,19 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/jasonharoldchavez/causal_engine_sdk.git
-
 cd causal_engine_sdk
 ```
 
 Install dependencies:
 
 ```bash
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 Install as a package:
 
 ```bash
-pip install .
+python -m pip install .
 ```
 
 ---
@@ -75,19 +75,12 @@ from causal_engine.asie import ASIEEngine
 import numpy as np
 
 engine = ASIEEngine(3)
-
-data = np.random.rand(50, 3)
-
+data = np.random.default_rng(7).normal(size=(50, 3))
 prediction = engine.predict(data)
-
 print(prediction)
 ```
 
-Example output:
-
-```
-[0.43 0.41 0.46]
-```
+The first call to `predict` fits the predictor on the supplied history and returns a next-step prediction. Use a separately held-out chronological segment to evaluate forecasting performance; do not treat in-sample fit as evidence of generalization.
 
 ---
 
@@ -95,19 +88,13 @@ Example output:
 
 ```
 causal_engine_sdk/
-
 ├── causal_engine/
 │   ├── asie/
-│   │   └── Adaptive Structural Inference Engine
+│   │   └── engine.py
 │   ├── models/
-│   │   └── Model plugins
 │   ├── simulators/
-│   │   └── Structural equation simulations
 │   ├── validators/
-│   │   └── Causal validation tools
 │   └── core/
-│       └── Interfaces and APIs
-
 ├── tests/
 ├── framework_core.py
 ├── main_run.py
@@ -119,91 +106,51 @@ causal_engine_sdk/
 
 ## Testing
 
-Run tests:
+The test suite uses Python's standard-library `unittest` runner and NumPy:
 
 ```bash
-pytest
+python -m pip install -r requirements.txt
+python -m unittest discover -s tests -v
 ```
+
+GitHub Actions runs the unit tests on Python 3.10–3.13 for pull requests and pushes to the main and ASIE-fix branches.
 
 ---
 
 ## Project Status
 
-Current release:
+Current published release: **v0.2.1**. Changes under review on the ASIE validation branch are not part of that release until merged and released.
 
-**v0.2.1**
-
-Implemented:
-
-- ASIE inference engine
-- Causal modeling framework
-- Validation tools
-- NumPy-based deployment
-- Documentation
-- Automated testing structure
+Implemented areas include the ASIE predictive engine, causal-modeling utilities, simulation components, and validation tools. The full causal-identification pipeline and matrix-orientation conventions across all modules still require separate review and testing.
 
 ---
 
 ## Roadmap
 
-Future development may include:
-
-- Additional causal discovery algorithms
-- More advanced simulation environments
-- Expanded validation metrics
-- Performance optimization
-- Additional deployment targets
+- Add and validate causal-discovery algorithms
+- Establish a canonical matrix/edge orientation contract and tests
+- Evaluate on held-out synthetic ground-truth scenarios with explicit false-positive and false-negative reporting
+- Expand validation metrics and performance tests
+- Improve deployment and documentation
 
 ---
 
-License
+## License
 
-Causal Engine SDK is available under a dual-license model.
+The repository describes an Apache License 2.0 open-source license and a separate commercial-license offering. Review the included `LICENSE` and `LICENSE-COMMERCIAL.md` files for the actual terms before redistribution or commercial use.
 
-Open Source License
-
-This project is licensed under the Apache License 2.0. See the "LICENSE" file for the complete license text.
-
-Commercial License
-
-Commercial licenses are available for organizations requiring enterprise support, custom development, proprietary integrations, or other commercial arrangements.
-
-See "LICENSE-COMMERCIAL.md" for details.
-
-For commercial licensing inquiries, contact:
-
-Jason Harold Chavez
-
-[Your contact email]
+For commercial licensing inquiries, the repository currently contains a placeholder contact email; replace it with a monitored address before relying on it for customer inquiries.
 
 ## Author
 
 Jason Harold Chavez
 
-GitHub:
-
-https://github.com/jasonharoldchavez
+GitHub: https://github.com/jasonharoldchavez
 
 ---
 
 ## Release Information
 
-Latest release:
+Latest published release listed in this repository: **Causal Engine SDK v0.2.1**.
 
-**Causal Engine SDK v0.2.1**
-
-Includes:
-
-- ASIE Adaptive Structural Inference Engine
-- Plugin architecture
-- Structural simulation tools
-- Validation framework
-- NumPy implementation
-
----
-
-## Contributing
-
-Issues, improvements, and research contributions are welcome.
-
-Please open an issue or submit a pull request through GitHub.
+Contributions and improvements are welcome through GitHub issues and pull requests.
