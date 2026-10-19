@@ -22,7 +22,11 @@ class ASIEEngine:
             raise ValueError("num_signals must be a positive integer")
         if isinstance(max_lags, bool) or not isinstance(max_lags, (int, np.integer)) or max_lags < 1:
             raise ValueError("max_lags must be a positive integer")
-        if not np.isscalar(alpha) or not np.isfinite(alpha) or alpha <= 0:
+        try:
+            valid_alpha = np.isscalar(alpha) and np.isfinite(alpha) and alpha > 0
+        except (TypeError, ValueError):
+            valid_alpha = False
+        if not valid_alpha:
             raise ValueError("alpha must be a finite positive number")
 
         self.num_signals = int(num_signals)
