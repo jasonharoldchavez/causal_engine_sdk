@@ -1,54 +1,68 @@
+"""Representation-level checks for a candidate matrix; not causal validation."""
 import numpy as np
 
 
 class ValidatedCausalASIE:
-    """
-    Final validation wrapper for ASIE causal inference.
+    """Summarize candidate directed links using C[target, source] convention.
 
-    Combines:
-    - causal matrix scoring
-    - confidence estimation
-    - validation reporting
+    A nonempty matrix result is not proof of causal identification. The legacy
+    confidence_score key is retained for compatibility, but is only the mean
+    selected edge weight and must not be interpreted as statistical confidence.
     """
 
     def __init__(self, confidence_threshold=0.05):
-        self.confidence_threshold = confidence_threshold
+        try:
+            threshold = float(confidence_threshold)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError("confidence_threshold must be a finite non-negative number.") from exc
+        if isinstance(confidence_threshold, (bool, np.bool_)) or not np.isfinite(threshold) or threshold < 0:
+            raise ValueError("confidence_threshold must be a finite non-negative number.")
+        self.confidence_threshold = threshold
 
     def evaluate(self, causal_matrix):
-        matrix = np.asarray(causal_matrix, dtype=float)
+        try:
+            matrix = np.asarray(causal_matrix, dtype=float)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError("causal_matrix must be a finite numeric square matrix.") from exc
+        if matrix.ndim != 2 or matrix.shape[0] != matrix.shape[1]:
+            raise ValueError("causal_matrix must be a square 2D matrix.")
+        if not np.isfinite(matrix).all():
+            raise ValueError("causal_matrix must contain only finite values.")
 
         active_links = []
         total_strength = 0.0
 
-        rows, cols = matrix.shape
-
-        for i in range(rows):
-            for j in range(cols):
-                if i != j and matrix[i, j] > self.confidence_threshold:
+        # Matrix row is target; column is source: C[target, source].
+        for target in range(matrix.shape[0]):
+            for source in range(matrix.shape[1]):
+                strength = float(matrix[target, source])
+                if source != target and strength > self.confidence_threshold:
                     active_links.append({
-                        "source": i,
-                        "target": j,
-                        "strength": float(matrix[i, j])
+                        "source": source,
+                        "target": target,
+                        "strength": strength,
                     })
+                    total_strength += strength
 
-                    total_strength += matrix[i, j]
-
-        confidence = 0.0
-
-        if len(active_links) > 0:
-            confidence = total_strength / len(active_links)
-
+        mean_edge_weight = total_strength / len(active_links) if active_links else 0.0
         return {
             "active_causal_links": active_links,
             "link_count": len(active_links),
-            "confidence_score": float(confidence)
+            "mean_edge_weight": float(mean_edge_weight),
+            # Compatibility alias only; this is not statistical confidence.
+            "confidence_score": float(mean_edge_weight),
         }
 
     def summarize(self, causal_matrix):
         report = self.evaluate(causal_matrix)
-
         return {
-            "status": "VALIDATED" if report["link_count"] > 0 else "NO STRUCTURE DETECTED",
+            "status": (
+                "STRUCTURE_DETECTED_UNVALIDATED"
+                if report["link_count"] > 0
+                else "NO_STRUCTURE_DETECTED"
+            ),
             "causal_links": report["link_count"],
-            "confidence": report["confidence_score"]
+            "mean_edge_weight": report["mean_edge_weight"],
+            # Deprecated compatibility alias; not a validation/confidence result.
+            "confidence": report["confidence_score"],
         }
